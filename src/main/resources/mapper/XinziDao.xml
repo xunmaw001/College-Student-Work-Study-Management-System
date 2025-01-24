@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.XinziDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.gongsi_id as gongsiId
+        ,a.yonghu_id as yonghuId
+        ,a.xinzi_uuid_number as xinziUuidNumber
+        ,a.xinzi_month as xinziMonth
+        ,a.jiben_jine as jibenJine
+        ,a.jiangjin_jine as jiangjinJine
+        ,a.jixiao_jine as jixiaoJine
+        ,a.butie_jine as butieJine
+        ,a.shifa_jine as shifaJine
+        ,a.xinzi_content as xinziContent
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.XinziView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,gongsi.gongsi_name as gongsiName
+        ,gongsi.gongsi_types as gongsiTypes
+        ,gongsi.gongsi_phone as gongsiPhone
+        ,gongsi.gongsi_email as gongsiEmail
+        ,gongsi.gongsi_photo as gongsiPhoto
+        ,gongsi.gongsi_content as gongsiContent
+        ,gongsi.gongsi_delete as gongsiDelete
+        ,yonghu.yonghu_name as yonghuName
+        ,yonghu.yonghu_photo as yonghuPhoto
+        ,yonghu.yonghu_phone as yonghuPhone
+        ,yonghu.yonghu_id_number as yonghuIdNumber
+        ,yonghu.yonghu_email as yonghuEmail
+        ,yonghu.yuanxi_types as yuanxiTypes
+        ,yonghu.zhuanye_types as zhuanyeTypes
+        ,yonghu.nianji_types as nianjiTypes
+        ,yonghu.yonghu_delete as yonghuDelete
+
+        FROM xinzi  a
+        left JOIN gongsi gongsi ON a.gongsi_id = gongsi.id
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.gongsiId != null and params.gongsiId != ''">
+                and (
+                    a.gongsi_id = #{params.gongsiId}
+                )
+            </if>
+            <if test="params.yonghuId != null and params.yonghuId != ''">
+                and (
+                    a.yonghu_id = #{params.yonghuId}
+                )
+            </if>
+            <if test=" params.xinziUuidNumber != '' and params.xinziUuidNumber != null and params.xinziUuidNumber != 'null' ">
+                and a.xinzi_uuid_number like CONCAT('%',#{params.xinziUuidNumber},'%')
+            </if>
+            <if test=" params.xinziMonth != '' and params.xinziMonth != null and params.xinziMonth != 'null' ">
+                and a.xinzi_month like CONCAT('%',#{params.xinziMonth},'%')
+            </if>
+            <if test="params.jibenJineStart != null ">
+                <![CDATA[  and a.jiben_jine >= #{params.jibenJineStart}   ]]>
+            </if>
+            <if test="params.jibenJineEnd != null ">
+                <![CDATA[  and a.jiben_jine <= #{params.jibenJineEnd}   ]]>
+            </if>
+            <if test="params.jibenJine != null and params.jibenJine != ''">
+                and a.jiben_jine = #{params.jibenJine}
+            </if>
+            <if test="params.jiangjinJineStart != null ">
+                <![CDATA[  and a.jiangjin_jine >= #{params.jiangjinJineStart}   ]]>
+            </if>
+            <if test="params.jiangjinJineEnd != null ">
+                <![CDATA[  and a.jiangjin_jine <= #{params.jiangjinJineEnd}   ]]>
+            </if>
+            <if test="params.jiangjinJine != null and params.jiangjinJine != ''">
+                and a.jiangjin_jine = #{params.jiangjinJine}
+            </if>
+            <if test="params.jixiaoJineStart != null ">
+                <![CDATA[  and a.jixiao_jine >= #{params.jixiaoJineStart}   ]]>
+            </if>
+            <if test="params.jixiaoJineEnd != null ">
+                <![CDATA[  and a.jixiao_jine <= #{params.jixiaoJineEnd}   ]]>
+            </if>
+            <if test="params.jixiaoJine != null and params.jixiaoJine != ''">
+                and a.jixiao_jine = #{params.jixiaoJine}
+            </if>
+            <if test="params.butieJineStart != null ">
+                <![CDATA[  and a.butie_jine >= #{params.butieJineStart}   ]]>
+            </if>
+            <if test="params.butieJineEnd != null ">
+                <![CDATA[  and a.butie_jine <= #{params.butieJineEnd}   ]]>
+            </if>
+            <if test="params.butieJine != null and params.butieJine != ''">
+                and a.butie_jine = #{params.butieJine}
+            </if>
+            <if test="params.shifaJineStart != null ">
+                <![CDATA[  and a.shifa_jine >= #{params.shifaJineStart}   ]]>
+            </if>
+            <if test="params.shifaJineEnd != null ">
+                <![CDATA[  and a.shifa_jine <= #{params.shifaJineEnd}   ]]>
+            </if>
+            <if test="params.shifaJine != null and params.shifaJine != ''">
+                and a.shifa_jine = #{params.shifaJine}
+            </if>
+            <if test=" params.xinziContent != '' and params.xinziContent != null and params.xinziContent != 'null' ">
+                and a.xinzi_content like CONCAT('%',#{params.xinziContent},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+
+                <!-- 判断用工部门的id不为空 -->
+            <if test=" params.gongsiIdNotNull != '' and params.gongsiIdNotNull != null and params.gongsiIdNotNull != 'null' ">
+                and a.gongsi_id IS NOT NULL
+            </if>
+            <if test=" params.gongsiName != '' and params.gongsiName != null and params.gongsiName != 'null' ">
+                and gongsi.gongsi_name like CONCAT('%',#{params.gongsiName},'%')
+            </if>
+            <if test="params.gongsiTypes != null  and params.gongsiTypes != ''">
+                and gongsi.gongsi_types = #{params.gongsiTypes}
+            </if>
+
+            <if test=" params.gongsiPhone != '' and params.gongsiPhone != null and params.gongsiPhone != 'null' ">
+                and gongsi.gongsi_phone like CONCAT('%',#{params.gongsiPhone},'%')
+            </if>
+            <if test=" params.gongsiEmail != '' and params.gongsiEmail != null and params.gongsiEmail != 'null' ">
+                and gongsi.gongsi_email like CONCAT('%',#{params.gongsiEmail},'%')
+            </if>
+            <if test=" params.gongsiContent != '' and params.gongsiContent != null and params.gongsiContent != 'null' ">
+                and gongsi.gongsi_content like CONCAT('%',#{params.gongsiContent},'%')
+            </if>
+            <if test="params.gongsiDeleteStart != null  and params.gongsiDeleteStart != '' ">
+                <![CDATA[  and gongsi.gongsi_delete >= #{params.gongsiDeleteStart}   ]]>
+            </if>
+            <if test="params.gongsiDeleteEnd != null  and params.gongsiDeleteEnd != '' ">
+                <![CDATA[  and gongsi.gongsi_delete <= #{params.gongsiDeleteEnd}   ]]>
+            </if>
+            <if test="params.gongsiDelete != null  and params.gongsiDelete != '' ">
+                and gongsi.gongsi_delete = #{params.gongsiDelete}
+            </if>
+                <!-- 判断学生的id不为空 -->
+            <if test=" params.yonghuIdNotNull != '' and params.yonghuIdNotNull != null and params.yonghuIdNotNull != 'null' ">
+                and a.yonghu_id IS NOT NULL
+            </if>
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+                and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+                and yonghu.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+            </if>
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+                and yonghu.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+            </if>
+            <if test=" params.yonghuEmail != '' and params.yonghuEmail != null and params.yonghuEmail != 'null' ">
+                and yonghu.yonghu_email like CONCAT('%',#{params.yonghuEmail},'%')
+            </if>
+            <if test="params.yuanxiTypes != null  and params.yuanxiTypes != ''">
+                and yonghu.yuanxi_types = #{params.yuanxiTypes}
+            </if>
+
+            <if test="params.zhuanyeTypes != null  and params.zhuanyeTypes != ''">
+                and yonghu.zhuanye_types = #{params.zhuanyeTypes}
+            </if>
+
+            <if test="params.nianjiTypes != null  and params.nianjiTypes != ''">
+                and yonghu.nianji_types = #{params.nianjiTypes}
+            </if>
+
+            <if test="params.yonghuDeleteStart != null  and params.yonghuDeleteStart != '' ">
+                <![CDATA[  and yonghu.yonghu_delete >= #{params.yonghuDeleteStart}   ]]>
+            </if>
+            <if test="params.yonghuDeleteEnd != null  and params.yonghuDeleteEnd != '' ">
+                <![CDATA[  and yonghu.yonghu_delete <= #{params.yonghuDeleteEnd}   ]]>
+            </if>
+            <if test="params.yonghuDelete != null  and params.yonghuDelete != '' ">
+                and yonghu.yonghu_delete = #{params.yonghuDelete}
+            </if>
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>
